@@ -1,9 +1,9 @@
 package CheapRuler;
 
-our $VERSION = '0.0.1';
+our $VERSION = '0.1.0';
 
 # how to update README.md
-#	pod2markdown CheapRuler.pm > README.md
+#	pod2markdown CheapRuler.pm > ../README.md
 
 =head1 CheapRuler
 
@@ -34,30 +34,38 @@ Data is passed / retured as arrayrefs, e.g. $p =  [ 0.1, 54.1 ];
 
 In the examples below, $p is a point, $a and $b are a line segment.
 
-$p = [ -1, 57 ];
+	$p = [ -1, 57 ];
 
-$a =  [0.1, 54.1];
-$b =  [0.2, 54.2];
+	$a =  [0.1, 54.1];
+	$b =  [0.2, 54.2];
 
-$ruler = Cheap::Ruler->new( ( 54.1 + 54.2 )/2, 'meters' ); # so the 'units' below are meters
+	$ruler = Cheap::Ruler->new( ( 54.1 + 54.2 )/2, 'meters' );
+	# so the 'units' below are meters
 
-$distance = $ruler->distance( $a, $b ); # return meters
+	$distance = $ruler->distance( $a, $b );
+	# return meters
 
-$bearing = $ruler->bearing( $a, $b ); # returns degrees
+	$bearing = $ruler->bearing( $a, $b );
+	# returns degrees
 
-$point = $ruler->destination( $a, 1000, 90); # returns a new point, 1000 units away at 90 degrees
+	$point = $ruler->destination( $a, 1000, 90);
+	# returns a new point, 1000 units away at 90 degrees
 
-$point = $ruler->offset( $p, 100, 200 ); # returns a point 100 units east, 200 units north
+	$point = $ruler->offset( $p, 100, 200 );
+	# returns a point 100 units east, 200 units north
 
-$distance = $ruler->lineDistance( ( $p, $a, $b ) ); # length of the line
+	$distance = $ruler->lineDistance( ( $p, $a, $b ) );
+	# length of the line
 
-$area = $ruler->area( (
+	$area = $ruler->area( (
 		[-67.031, 50.458], [-67.031, 50.534], [-66.929, 50.534], [-66.929, 50.458], [-67.031, 50.458]
 		) ); # area of a polygon
 
-$point = $ruler->along( ( [-67.031, 50.458], [-67.031, 50.534], [-66.929, 50.534] ), 2.5); # returs a point 2.5 units along the line
+	$point = $ruler->along( ( [-67.031, 50.458], [-67.031, 50.534], [-66.929, 50.534] ), 2.5);
+	# returns a point 2.5 units along the line
 
-$distance = $ruler->pointToSegmentDistance( $p, $a, $b ); # distance from point to a 2 point line segment 
+	$distance = $ruler->pointToSegmentDistance( $p, $a, $b );
+	# distance from point to a 2 point line segment 
 
 =cut
 
@@ -96,7 +104,7 @@ our $RAD	= pi / 180; # from Math::Trig
 
 Creates a ruler object from Google web mercator tile coordinates (y and z). That's correct, y and z, not x.
 
-$ruler = CheapRuler::fromTile( 11041, 15, 'meters');
+	$ruler = CheapRuler::fromTile( 11041, 15, 'meters');
 
 =cut
 
@@ -111,11 +119,11 @@ sub fromTile( $y, $z, $units='kilometers') {
 
 Multipliers for converting between units.
  
-example : convert 50 meters to yards
+	example : convert 50 meters to yards
 
-$units =  CheapRuler::units();
+	$units =  CheapRuler::units();
 
-$yards = 50 * $units->{yards} / $units->{meters};
+	$yards = 50 * $units->{yards} / $units->{meters};
 
 =cut
 
@@ -127,9 +135,9 @@ sub CheapRuler::units() {
 
 Create a ruler instance for very fast approximations to common geodesic measurements around a certain latitude.
 
-param latitude
+	param latitude
 
-param units (optional), one of: kilometers miles nauticalmiles meters metres yards feet inches   
+	param units (optional), one of: kilometers miles nauticalmiles meters metres yards feet inches   
  
 $ruler = CheapRuler->new(35.05, 'miles');
 
@@ -158,11 +166,11 @@ sub   new ( $class, $lat, $units='kilometers' ) {
 
 Given two points of the form [longitude, latitude], returns the distance in 'ruler' units.
 
-param a, point [longitude, latitude]
+	param $a, point [longitude, latitude]
 
-param b, point [longitude, latitude]
+	param $b, point [longitude, latitude]
 
-returns distance (in chosen units)
+	returns distance (in chosen units)
 
 $distance = $ruler->distance([30.5, 50.5], [30.51, 50.49]);
 
@@ -179,13 +187,13 @@ sub distance( $self, $a, $b) {
 
 Returns the bearing between two points in degrees
 	
-param a, point [longitude, latitude]
+	param $a, point [longitude, latitude]
 
-param b, point [longitude, latitude]
+	param $b, point [longitude, latitude]
 
-returns bearing (degrees)
+	returns $bearing (degrees)
 	
-bearing = ruler->bearing([30.5, 50.5], [30.51, 50.49]);
+	$bearing = $ruler->bearing([30.5, 50.5], [30.51, 50.49]);
 =cut
 
 sub bearing($self, $a, $b) {
@@ -198,15 +206,15 @@ sub bearing($self, $a, $b) {
 
 Returns a new point given distance and bearing from the starting point.
 
-param p point [longitude, latitude]
+	param $p point [longitude, latitude]
 
-param dist distance in chosen units
+	param $dist distance in chosen units
 
-param bearing (degrees)
+	param $bearing (degrees)
 
-returns point [longitude, latitude]
+	returns $point [longitude, latitude]
 	
-$point = ruler->destination([30.5, 50.5], 0.1, 90);
+	$point = ruler->destination([30.5, 50.5], 0.1, 90);
 =cut
 
 sub destination( $self, $p, $dist, $bearing) {
@@ -222,15 +230,15 @@ sub destination( $self, $p, $dist, $bearing) {
      
 Returns a new point given easting and northing offsets (in ruler units) from the starting point.
    
-param point, [longitude, latitude]
+	param $point, [longitude, latitude]
 
-param dx, easting, in ruler units
+	param $dx, easting, in ruler units
 
-param dy, northing, in ruler units
+	param $dy, northing, in ruler units
 
-returns point [longitude, latitude]
+	returns $point [longitude, latitude]
 
-$point = ruler.offset([30.5, 50.5], 10, 10);
+	$point = ruler.offset([30.5, 50.5], 10, 10);
 =cut
 
 sub offset( $self, $p, $dx, $dy) {
@@ -244,14 +252,14 @@ sub offset( $self, $p, $dx, $dy) {
 
 Given a line (an array of points), returns the total line distance.
 
-param points, listref of points, where a point is [longitude, latitude]
+	param $points, listref of points, where a point is [longitude, latitude]
 
-returns number, total line distance in 'ruler' units
+	returns $number, total line distance in 'ruler' units
 
-$length = ruler->lineDistance([
-	[-67.031, 50.458], [-67.031, 50.534],
-	[-66.929, 50.534], [-66.929, 50.458]
-	]);
+	$length = ruler->lineDistance([
+		[-67.031, 50.458], [-67.031, 50.534],
+		[-66.929, 50.534], [-66.929, 50.458]
+		]);
 =cut
 
 sub lineDistance( $self, $points ) {
@@ -266,13 +274,13 @@ sub lineDistance( $self, $points ) {
 
 Given a polygon (an array of rings, where each ring is an array of points), returns the area.
 	
-param $polygon, a list-ref of rings, where a ring is a list of points [lon,lat], 1st ring is outer, 2nd+ rings are inner (holes)
+	param $polygon, a list-ref of rings, where a ring is a list of points [lon,lat], 1st ring is outer, 2nd+ rings are inner (holes)
 
-returns $number, area value in the specified 'ruler' units (square kilometers by default)
+	returns $number, area value in the specified 'ruler' units (square kilometers by default)
 	
-$area = $ruler->area([[
-	[-67.031, 50.458], [-67.031, 50.534], [-66.929, 50.534], [-66.929, 50.458], [-67.031, 50.458]
-	]]);
+	$area = $ruler->area([[
+		[-67.031, 50.458], [-67.031, 50.534], [-66.929, 50.534], [-66.929, 50.458], [-67.031, 50.458]
+		]]);
 =cut
 
 sub area( $self, $polygon ) {
@@ -293,15 +301,15 @@ sub area( $self, $polygon ) {
 
 Returns the point at a specified distance along the line.
 
-param $line, a list-ref of points of [lon, lat]
+	param $line, a list-ref of points of [lon, lat]
 
-param $dist, distance in ruler units
+	param $dist, distance in ruler units
 
-returns $point, a list-ref [lon, lat]
+	returns $point, a list-ref [lon, lat]
 	
-point = ruler->along(
-	[ [-67.031, 50.458], [-67.031, 50.534], [-66.929, 50.534] ],
-	2.5);
+	$point = $ruler->along(
+		[ [-67.031, 50.458], [-67.031, 50.534], [-66.929, 50.534] ],
+		2.5);
 =cut
 
 sub along( $self, $line, $dist ) {
@@ -324,15 +332,15 @@ sub along( $self, $line, $dist ) {
 
 Returns the distance from a point `p` to a line segment `a` to `b`.
 
-param p, point, [longitude, latitude]
+	param $p, point, [longitude, latitude]
 
-param a, segment point 1, [longitude, latitude]
+	param $a, segment point 1, [longitude, latitude]
 
-param b, segment point 2, [longitude, latitude]
+	param $b, segment point 2, [longitude, latitude]
 
-returns distance (in ruler units)
+	returns $distance (in ruler units)
     
-let distance = $ruler->pointToSegmentDistance([-67.04, 50.5], [-67.05, 50.57], [-67.03, 50.54]);
+	$distance = $ruler->pointToSegmentDistance([-67.04, 50.5], [-67.05, 50.57], [-67.03, 50.54]);
 =cut
 
 sub pointToSegmentDistance( $self, $p, $a, $b) {
@@ -364,18 +372,20 @@ sub pointToSegmentDistance( $self, $p, $a, $b) {
 
 Returns an object of the form {point, index, t}, where
 
-point is closest point on the line from the given point,
+	* point is closest point on the line from the given point,
 
-index is the start index of the segment with the closest point,
+	* index is the start index of the segment with the closest point,
 
-t is a parameter from 0 to 1 that indicates where the closest point is on that segment.
+	* t is a parameter from 0 to 1 that indicates where the closest point is on that segment.
 
-param $line, lisreft of points of [lon, lat]
-param $p, point of [longitude, latitude]
 
-returns { point : [lon, lat], index, t }}
+	param $line, listref of points of [lon, lat]
 
-$info = ruler->pointOnLine( line, [-67.04, 50.5])
+	param $p, point of [longitude, latitude]
+
+	returns { point : [lon, lat], index, t }}
+
+	$info = $ruler->pointOnLine( $line, [-67.04, 50.5])
 =cut
 
 sub pointOnLine( $self, $line, $p) {
@@ -434,15 +444,15 @@ sub pointOnLine( $self, $line, $p) {
 
 Returns a part of the given line between the start and the stop points (or their closest points on the line).
 
-param start, point [longitude, latitude]
+	param $start, point [longitude, latitude]
 
-param stop, point [longitude, latitude]
+	param $stop, point [longitude, latitude]
 
-param line, arrayref of points of [lon,lat]
+	param $line, arrayref of points of [lon,lat]
 
-@returns {[number, number][]} line part of a line
+	returns $linea_slice (a listref) part of the line
 
-$line_slice = $ruler->lineSlice([-67.04, 50.5], [-67.05, 50.56], $line);
+	$line_slice = $ruler->lineSlice([-67.04, 50.5], [-67.05, 50.56], $line);
 =cut
 
 sub lineSlice($self, $start, $stop, $line) {
@@ -479,15 +489,15 @@ sub lineSlice($self, $start, $stop, $line) {
 
 Returns a part of the given line between the start and the stop points indicated by distance (in 'units') along the line.
 
-param start, distance, in ruler units
+	param $start, distance, in ruler units
 
-param stop stop, distance, in ruler units
+	param $stop stop, distance, in ruler units
 
-param line, listref of points
+	param $line, listref of points
 
-returns line_slice, listref of points, part of a line
+	returns $line_slice, listref of points, part of a line
 
-$line_slice = $ruler->lineSliceAlong(10, 20, $line);
+	$line_slice = $ruler->lineSliceAlong(10, 20, $line);
 
 =cut
 
@@ -521,13 +531,13 @@ sub lineSliceAlong( $self, $start, $stop, $line) {
 
 Given a point, returns a bounding box object ([w, s, e, n]) created from the given point buffered by a given distance.
  
-param {[number, number]} p point [longitude, latitude]
+	param $p point [longitude, latitude]
 
-param {number} buffer, a distance in ruler units
+	param $buffer, a distance in ruler units
 
-returns bbox, listref, [w, s, e, n]
+	returns $bbox, listref, [w, s, e, n]
 
-my $bbox = $ruler.bufferPoint([30.5, 50.5], 0.01);
+	$bbox = $ruler->bufferPoint([30.5, 50.5], 0.01);
  
 =cut
 
@@ -546,13 +556,13 @@ sub bufferPoint( $self, $p, $buffer) {
 
 Given a bounding box, returns the box buffered by a given distance.
 
-param bbox, listref of [w, s, e, n]
+	param $bbox, listref of [w, s, e, n]
 
-param buffer, distance in ruler units
+	param $buffer, distance in ruler units
 
-returns bbox, listref, [w, s, e, n]
+	returns $bbox, a listref, [w, s, e, n]
 
-my $bbox = ruler->bufferBBox([30.5, 50.5, 31, 51], 0.2);
+	$bbox = $ruler->bufferBBox([30.5, 50.5, 31, 51], 0.2);
 
 =cut
 
@@ -571,13 +581,13 @@ sub bufferBBox( $self, $bbox, $buffer) {
 
 Returns true (1) if the given point is inside in the given bounding box, otherwise false (0).
 
-param p point [longitude, latitude]
+	param $p point [longitude, latitude]
 
-param bbox, listref [w, s, e, n]
+	param $bbox, listref [w, s, e, n]
 
-returns 0 or 1 (boolean)
+	returns 0 or 1 (boolean)
 
-my $inside = $ruler->insideBBox([30.5, 50.5], [30, 50, 31, 51]);
+	$is_inside = $ruler->insideBBox([30.5, 50.5], [30, 50, 31, 51]);
 =cut
 
 sub insideBBox( $self, $p, $bbox) {
@@ -589,11 +599,13 @@ sub insideBBox( $self, $p, $bbox) {
 
 =head3 CheapRuler::equals( $a, $b)
 
-tests if 2 points are equal, a function not a method!
+tests if 2 points are equals
 
-param a, point, ( lon, lat )
+a function not a method!
 
-param b, point, ( lon, lat )
+	param $a, point, [ lon, lat ]
+
+	param $b, point, [ lon, lat ]
 
 =cut
 
@@ -605,13 +617,15 @@ sub equals($a, $b) {
 
 returns point along a line segment from a to b
 
-param a, point, [lon, lat]
+a function not a method!
 
-param b, point, [lon, lat]
+	param $a, point, [lon, lat]
 
-param t, ratio of way along the line segment
+	param $b, point, [lon, lat]
 
-returns p, point [ lon, lat]
+	param $t, ratio (0 <= $t  < 1 ), of the way along the line segment
+
+	returns $p, point [ lon, lat]
 =cut
 
 sub interpolate($a, $b, $t) {
@@ -627,7 +641,9 @@ sub interpolate($a, $b, $t) {
 
 normalize a degree value into [-180..180] range
 
-param degrees
+a function not a method!
+
+	param degrees
  
 =cut
 
