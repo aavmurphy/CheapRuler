@@ -14,22 +14,21 @@ Very fast as they use just 1 trig function per call.
 The Maths model is based upon the Earth's actual shape (a squashed sphere). For 'city' scale work, it is more accurate than
 the Haversine formulae (which uses several trig calls based upon a spherical Earth). The Cheap_Ruler Github page explains it better!
 
-Homepage : https://github.com/aavmurphy/CheapRuler
+=head2 Hompage
 
-Note:
+https://github.com/aavmurphy/CheapRuler
 
-  it is based on geojson style GPS geometry, so points are [lon, lat].
+head2 Usage
 
-  a polygon is a series of rings. The first ring is exterior and clockwise. Subsequent rings are interior (holes) and anticlockwise. 
+This module uses "geojson" style GPS geometrys. Points are [lon, lat]. Polygons are a series of rings. The first ring is exterior and clockwise. Subsequent rings are interior (holes) and anticlockwise. 
 
-
-=head2 Usage
-
-The latitude (lat) parameter passed to the conructor should be the 'middle' of the lat's used.
+The latitude (lat) parameter passed to the constructor should be the 'middle' of the lat's used.
 
 Some methods have units, e.g. "expand a bounding box by 10 meters/miles/kilometers". The default 'units' are 'kilometers', you may which to use 'meters'.
 
 Data is passed / retured as arrayrefs, e.g. $p =  [ 0.1, 54.1 ];
+
+#head2 Examples
 
 In the examples below, $p is a point, $a and $b are a line segment.
 
@@ -66,7 +65,6 @@ use experimental 'signatures';
 use Math::Trig;
 use Data::Dumper;
 
-
 our %FACTORS = (
     kilometers	=> 1,
     miles		=> 1000 / 1609.344,
@@ -90,12 +88,11 @@ our $RAD	= pi / 180; # from Math::Trig
  # A collection of very fast approximations to common geodesic measurements. Useful for performance-sensitive code that measures things on a city scale.
  #
 
+=head3 fromTile( $y, $z, $units='kilometers' )
 
-=head2 fromTile
+Creates a ruler object from Google web mercator tile coordinates (y and z). That's correct, not x.
 
-Creates a ruler object from Google web mercator tile coordinates (y and z).
-
-ruler = CheapRuler::fromTile( 11041, 15, 'meters');
+$ruler = CheapRuler::fromTile( 11041, 15, 'meters');
 
 =cut
 
@@ -106,7 +103,7 @@ sub fromTile( $y, $z, $units='kilometers') {
         return CheapRuler->new($lat, $units);
     }
 
-=head2 units
+=head3 units()
 
 Multipliers for converting between units.
  
@@ -120,7 +117,7 @@ sub units() {
 	return { %FACTORS };
 	}
 
-=head2 new( $lat, $units='meters' )
+=head2 new( $lat, $units='kilometers' )
 
 Create a ruler instance for very fast approximations to common geodesic measurements around a certain latitude.
 
@@ -196,7 +193,9 @@ sub bearing($self, $a, $b) {
 Returns a new point given distance and bearing from the starting point.
 
 param p point [longitude, latitude]
+
 param dist distance in chosen units
+
 param bearing (degrees)
 
 returns point [longitude, latitude]
@@ -218,7 +217,9 @@ sub destination( $self, $p, $dist, $bearing) {
 Returns a new point given easting and northing offsets (in ruler units) from the starting point.
    
 param point, [longitude, latitude]
+
 param dx, easting, in ruler units
+
 param dy, northing, in ruler units
 
 returns point [longitude, latitude]
@@ -233,7 +234,7 @@ sub offset( $self, $p, $dx, $dy) {
 		];
 	}
  
-=head2 lineDistance ( points )
+=head2 lineDistance ( $points )
 
 Given a line (an array of points), returns the total line distance.
 
@@ -284,16 +285,17 @@ sub area( $self, $polygon ) {
 
 =head2 along( $line, $distance)
 
-	Returns the point at a specified distance along the line.
+Returns the point at a specified distance along the line.
 
-	param $line, a list-ref of points of [lon, lat]
-	param $dist, distance in ruler units
+param $line, a list-ref of points of [lon, lat]
 
-	returns $point, a list-ref [lon, lat]
+param $dist, distance in ruler units
+
+returns $point, a list-ref [lon, lat]
 	
-	point = ruler->along(
-		[ [-67.031, 50.458], [-67.031, 50.534], [-66.929, 50.534] ],
-		2.5);
+point = ruler->along(
+	[ [-67.031, 50.458], [-67.031, 50.534], [-66.929, 50.534] ],
+	2.5);
 =cut
 
 sub along( $self, $line, $dist ) {
@@ -314,15 +316,17 @@ sub along( $self, $line, $dist ) {
 
 =head2 pointToSegmentDistance( $p, $a, $b )
 
-	Returns the distance from a point `p` to a line segment `a` to `b`.
+Returns the distance from a point `p` to a line segment `a` to `b`.
 
-	param p, point, [longitude, latitude]
-	param a, segment point 1, [longitude, latitude]
-	param b, segment point 2, [longitude, latitude]
+param p, point, [longitude, latitude]
 
-	returns distance (in ruler units)
+param a, segment point 1, [longitude, latitude]
+
+param b, segment point 2, [longitude, latitude]
+
+returns distance (in ruler units)
     
-	let distance = $ruler->pointToSegmentDistance([-67.04, 50.5], [-67.05, 50.57], [-67.03, 50.54]);
+let distance = $ruler->pointToSegmentDistance([-67.04, 50.5], [-67.05, 50.57], [-67.03, 50.54]);
 =cut
 
 sub pointToSegmentDistance( $self, $p, $a, $b) {
@@ -354,11 +358,11 @@ sub pointToSegmentDistance( $self, $p, $a, $b) {
 
 Returns an object of the form {point, index, t}, where
 
-	point is closest point on the line from the given point,
+point is closest point on the line from the given point,
 
-	index is the start index of the segment with the closest point,
+index is the start index of the segment with the closest point,
 
-	t is a parameter from 0 to 1 that indicates where the closest point is on that segment.
+t is a parameter from 0 to 1 that indicates where the closest point is on that segment.
 
 param $line, lisreft of points of [lon, lat]
 param $p, point of [longitude, latitude]
@@ -470,8 +474,11 @@ sub lineSlice($self, $start, $stop, $line) {
 Returns a part of the given line between the start and the stop points indicated by distance (in 'units') along the line.
 
 param start, distance, in ruler units
+
 param stop stop, distance, in ruler units
+
 param line, listref of points
+
 returns line_slice, listref of points, part of a line
 
 $line_slice = $ruler->lineSliceAlong(10, 20, $line);
@@ -611,4 +618,5 @@ sub wrap( $deg) {
     while ( $deg > 180)  { $deg -= 360; }
 
     return $deg;
+
 	}
