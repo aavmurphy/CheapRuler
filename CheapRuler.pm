@@ -14,11 +14,11 @@ Very fast as they use just 1 trig function per call.
 The Maths model is based upon the Earth's actual shape (a squashed sphere). For 'city' scale work, it is more accurate than
 the Haversine formulae (which uses several trig calls based upon a spherical Earth). The Cheap_Ruler Github page explains it better!
 
-=head2 Hompage
+=head2 Website
 
 https://github.com/aavmurphy/CheapRuler
 
-head2 Usage
+=head2 Usage
 
 This module uses "geojson" style GPS geometrys. Points are [lon, lat]. Polygons are a series of rings. The first ring is exterior and clockwise. Subsequent rings are interior (holes) and anticlockwise. 
 
@@ -28,7 +28,7 @@ Some methods have units, e.g. "expand a bounding box by 10 meters/miles/kilomete
 
 Data is passed / retured as arrayrefs, e.g. $p =  [ 0.1, 54.1 ];
 
-#head2 Examples
+=head2 Examples
 
 In the examples below, $p is a point, $a and $b are a line segment.
 
@@ -84,23 +84,25 @@ our $FE		= 1 / 298.257223563; # flattening
 our $E2		= $FE * (2 - $FE);
 our $RAD	= pi / 180; # from Math::Trig
 
- #
- # A collection of very fast approximations to common geodesic measurements. Useful for performance-sensitive code that measures things on a city scale.
- #
+#
+# A collection of very fast approximations to common geodesic measurements. Useful for performance-sensitive code that measures things on a city scale.
+#
 
-=head3 fromTile( $y, $z, $units='kilometers' )
+=head2 API
 
-Creates a ruler object from Google web mercator tile coordinates (y and z). That's correct, not x.
+=head3 CheapRuler::fromTile( $y, $z, $units='kilometers' )
+
+Creates a ruler object from Google web mercator tile coordinates (y and z). That's correct, y and z, not x.
 
 $ruler = CheapRuler::fromTile( 11041, 15, 'meters');
 
 =cut
 
 sub fromTile( $y, $z, $units='kilometers') {
-        my $n	= pi * (1 - 2 * ($y + 0.5) / ( 2**$z ));
-        my $lat	= atan(0.5 * ( exp($n) - exp(-$n) )) / $RAD;
+	my $n	= pi * (1 - 2 * ($y + 0.5) / ( 2**$z ));
+	my $lat	= atan(0.5 * ( exp($n) - exp(-$n) )) / $RAD;
 
-        return CheapRuler->new($lat, $units);
+	return CheapRuler->new($lat, $units);
     }
 
 =head3 units()
@@ -109,23 +111,25 @@ Multipliers for converting between units.
  
 example : convert 50 meters to yards
 
-50 * CheapRuler::units()->{yards} / CheapRuler::units()->{meters};
+$units =  CheapRuler::units();
+
+$yards = 50 * $units->{yards} / $units->{meters};
 
 =cut
 
-sub units() {
+sub CheapRuler::units() {
 	return { %FACTORS };
 	}
 
-=head2 new( $lat, $units='kilometers' )
+=head3 CheapRuler->new( $lat, $units='kilometers' )
 
 Create a ruler instance for very fast approximations to common geodesic measurements around a certain latitude.
 
 param latitude
 
-param (optional) {key of %FACTORS}
+param units (optional), one of: kilometers miles nauticalmiles meters metres yards feet inches   
  
-ruler = CheapRuler(35.05, 'miles');
+$ruler = CheapRuler->new(35.05, 'miles');
 
 =cut
 
@@ -148,9 +152,9 @@ sub   new ( $class, $lat, $units='kilometers' ) {
 		return $self;
 		}
 
-=head2 distance( $a, $b )
+=head3 distance( $a, $b )
 
-Given two points of the form [longitude, latitude], returns the distance.
+Given two points of the form [longitude, latitude], returns the distance in 'ruler' units.
 
 param a, point [longitude, latitude]
 
@@ -169,17 +173,17 @@ sub distance( $self, $a, $b) {
         return sqrt( $dx * $dx + $dy * $dy);
     }
 
-=head2 bearing( $a, $b )
+=head3 bearing( $a, $b )
 
-	Returns the bearing between two points in degrees
+Returns the bearing between two points in degrees
 	
-	param a, point [longitude, latitude]
+param a, point [longitude, latitude]
 
-	param b, point [longitude, latitude]
+param b, point [longitude, latitude]
 
-	returns bearing (degrees)
+returns bearing (degrees)
 	
-	bearing = ruler->bearing([30.5, 50.5], [30.51, 50.49]);
+bearing = ruler->bearing([30.5, 50.5], [30.51, 50.49]);
 =cut
 
 sub bearing($self, $a, $b) {
@@ -188,7 +192,7 @@ sub bearing($self, $a, $b) {
 	return atan2($dx, $dy) / $RAD;
     }
 
-=head2 destination( $point, $distance, $bearing)
+=head3 destination( $point, $distance, $bearing)
 
 Returns a new point given distance and bearing from the starting point.
 
@@ -212,7 +216,7 @@ sub destination( $self, $p, $dist, $bearing) {
 			);
     }
 
-=head2 offset( $point, dx, dy ) 
+=head3 offset( $point, dx, dy ) 
      
 Returns a new point given easting and northing offsets (in ruler units) from the starting point.
    
@@ -234,7 +238,7 @@ sub offset( $self, $p, $dx, $dy) {
 		];
 	}
  
-=head2 lineDistance ( $points )
+=head3 lineDistance ( $points )
 
 Given a line (an array of points), returns the total line distance.
 
@@ -256,7 +260,7 @@ sub lineDistance( $self, $points ) {
 	return $total;
 	}
 
-=head2 area( $polygon )
+=head3 area( $polygon )
 
 Given a polygon (an array of rings, where each ring is an array of points), returns the area.
 	
@@ -283,7 +287,7 @@ sub area( $self, $polygon ) {
 		return ( abs( $sum ) / 2 ) * $self->{kx} * $self->{ky};
 		}
 
-=head2 along( $line, $distance)
+=head3 along( $line, $distance)
 
 Returns the point at a specified distance along the line.
 
@@ -314,7 +318,7 @@ sub along( $self, $line, $dist ) {
 	return $line->[ $#{ $line } ];
 	}
 
-=head2 pointToSegmentDistance( $p, $a, $b )
+=head3 pointToSegmentDistance( $p, $a, $b )
 
 Returns the distance from a point `p` to a line segment `a` to `b`.
 
@@ -354,7 +358,7 @@ sub pointToSegmentDistance( $self, $p, $a, $b) {
 	return sqrt($dx**2 + $dy**2);
 }
 
-=head2 pointOnLine( $line, $p )
+=head3 pointOnLine( $line, $p )
 
 Returns an object of the form {point, index, t}, where
 
@@ -424,7 +428,7 @@ sub pointOnLine( $self, $line, $p) {
 		};
 	}
 
-=head2 lineSlice( $start, $stop, $line )
+=head3 lineSlice( $start, $stop, $line )
 
 Returns a part of the given line between the start and the stop points (or their closest points on the line).
 
@@ -469,7 +473,7 @@ sub lineSlice($self, $start, $stop, $line) {
 	return [ @slice ];
 	}
 
-=head2 lineSliceAlong( $start, $stop, $line )
+=head3 lineSliceAlong( $start, $stop, $line )
 
 Returns a part of the given line between the start and the stop points indicated by distance (in 'units') along the line.
 
@@ -511,7 +515,7 @@ sub lineSliceAlong( $self, $start, $stop, $line) {
 	return [ @slice ];
 	}
 
-=head2 bufferPoint( point, buffer_distance )
+=head3 bufferPoint( point, buffer_distance )
 
 Given a point, returns a bounding box object ([w, s, e, n]) created from the given point buffered by a given distance.
  
@@ -536,7 +540,7 @@ sub bufferPoint( $self, $p, $buffer) {
 		];
 	}
 
-=head2 bufferBBox( $bbox, $buffer )
+=head3 bufferBBox( $bbox, $buffer )
 
 Given a bounding box, returns the box buffered by a given distance.
 
@@ -561,7 +565,7 @@ sub bufferBBox( $self, $bbox, $buffer) {
         ];
     }
 
-=head2 insideBBox( $point, $bbox )
+=head3 insideBBox( $point, $bbox )
 
 Returns true (1) if the given point is inside in the given bounding box, otherwise false (0).
 
@@ -581,23 +585,32 @@ sub insideBBox( $self, $p, $bbox) {
 		   $p->[1] <= $bbox->[3];
 	}
 
-# equals ( $a, $b ) - tests if 2 points are equal, private
-#
-# 	param a, point, ( lon, lat )
-# 	param b, point, ( lon, lat )
-#
+=head3 CheapRuler::equals( $a, $b)
+
+tests if 2 points are equal, a function not a method!
+
+param a, point, ( lon, lat )
+
+param b, point, ( lon, lat )
+
+=cut
 
 sub equals($a, $b) {
     return ( $a->[0] == $b->[0] && $a->[1] == $b->[1] ) ? 1 : 0;
 	}
 
-# interpolate ( $a, $b, $t ) - returns point along a line segment from a to b, private
-#
-#	param a, point, [lon, lat]
-#	param b, point, [lon, lat]
-# 	param t, ratio of way along the line segment
-#
-# returns p, point [ lon, lat]
+=head3 CheapRuler::interpolate( $a, $b, $t )
+
+returns point along a line segment from a to b
+
+param a, point, [lon, lat]
+
+param b, point, [lon, lat]
+
+param t, ratio of way along the line segment
+
+returns p, point [ lon, lat]
+=cut
 
 sub interpolate($a, $b, $t) {
     my $dx = &wrap($b->[0] - $a->[0]);
@@ -608,10 +621,14 @@ sub interpolate($a, $b, $t) {
 		];
 	}
 
-#
-# normalize a degree value into [-180..180] range
-#	param degrees
-# 
+=head3 CheapRuler::normalize( $degrees )
+
+normalize a degree value into [-180..180] range
+
+param degrees
+ 
+=cut
+
 sub wrap( $deg) {
 	
     while ( $deg < -180) { $deg += 360; }
@@ -620,3 +637,5 @@ sub wrap( $deg) {
     return $deg;
 
 	}
+
+1;
