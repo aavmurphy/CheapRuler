@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-require '../CheapRuler.pm';
+require '../lib/CheapRuler.pm';
 
 use Scalar::Util qw(looks_like_number);
 use JSON;

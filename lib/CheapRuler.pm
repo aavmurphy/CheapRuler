@@ -1,5 +1,7 @@
 package CheapRuler;
 
+our $VERSION = '0.0.1';
+
 # how to update README.md
 #	pod2markdown CheapRuler.pm > README.md
 
@@ -7,7 +9,7 @@ package CheapRuler;
 
 A collection of very fast approximations to common geodesic measurements. Useful for performance-sensitive code that measures things on a city scale (less than 500km, not near the poles). Can be an order of magnitude faster than Haversine based methods.
 
-A Perl port of Mapbox's cheap-ruler https://github.com/mapbox/cheap-ruler
+A Perl port of Mapbox's cheap-ruler v4.0.0 https://github.com/mapbox/cheap-ruler
 
 Very fast as they use just 1 trig function per call.
 
