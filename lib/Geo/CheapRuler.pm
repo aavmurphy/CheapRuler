@@ -1,11 +1,19 @@
-package CheapRuler;
+package Geo::CheapRuler;
+
+# how to update README.md
+#	pod2markdown CheapRuler.pm > ../../README.md
 
 our $VERSION = '0.1.0';
 
-# how to update README.md
-#	pod2markdown CheapRuler.pm > ../README.md
+=head1 NAME 
 
-=head1 CheapRuler
+Geo::CheapRuler
+
+=head1 VERSION
+
+0.1.0
+
+=head1 SYNOPSIS
 
 A collection of very fast approximations to common geodesic measurements. Useful for performance-sensitive code that measures things on a city scale (less than 500km, not near the poles). Can be an order of magnitude faster than Haversine based methods.
 
@@ -16,11 +24,15 @@ Very fast as they use just 1 trig function per call.
 The Maths model is based upon the Earth's actual shape (a squashed sphere). For 'city' scale work, it is more accurate than
 the Haversine formulae (which uses several trig calls based upon a spherical Earth). The Cheap_Ruler Github page explains it better!
 
-=head2 Website
+=head1 EXPORT
+
+Nothing
+
+=head1 WEBSITE
 
 https://github.com/aavmurphy/CheapRuler
 
-=head2 Usage
+=head1 USAGE
 
 This module uses "geojson" style GPS geometrys. Points are [lon, lat]. Polygons are a series of rings. The first ring is exterior and clockwise. Subsequent rings are interior (holes) and anticlockwise. 
 
@@ -30,7 +42,7 @@ Some methods have units, e.g. "expand a bounding box by 10 meters/miles/kilomete
 
 Data is passed / retured as arrayrefs, e.g. $p =  [ 0.1, 54.1 ];
 
-=head2 Examples
+=head1 EXAMPLES
 
 In the examples below, $p is a point, $a and $b are a line segment.
 
@@ -71,6 +83,7 @@ In the examples below, $p is a point, $a and $b are a line segment.
 
 use strict;
 use warnings;
+use 5.20; # min version for experimental signatures
 use experimental 'signatures';
 use Math::Trig;
 use Data::Dumper;
@@ -92,17 +105,19 @@ our $RE		= 6378.137; # equatorial radius
 our $FE		= 1 / 298.257223563; # flattening
 
 our $E2		= $FE * (2 - $FE);
-our $RAD	= pi / 180; # from Math::Trig
+our $RAD	= pi / 180; # pi from Math::Trig
 
 #
 # A collection of very fast approximations to common geodesic measurements. Useful for performance-sensitive code that measures things on a city scale.
 #
 
-=head2 API
+=head1 API
 
-=head3 CheapRuler::fromTile( $y, $z, $units='kilometers' )
+=head2 CheapRuler::fromTile( $y, $z, $units='kilometers' )
 
 Creates a ruler object from Google web mercator tile coordinates (y and z). That's correct, y and z, not x.
+
+Example
 
 	$ruler = CheapRuler::fromTile( 11041, 15, 'meters');
 
@@ -115,11 +130,11 @@ sub fromTile( $y, $z, $units='kilometers') {
 	return CheapRuler->new($lat, $units);
     }
 
-=head3 units()
+=head2 units()
 
 Multipliers for converting between units.
  
-	example : convert 50 meters to yards
+Example : convert 50 meters to yards
 
 	$units =  CheapRuler::units();
 
@@ -131,7 +146,7 @@ sub CheapRuler::units() {
 	return { %FACTORS };
 	}
 
-=head3 CheapRuler->new( $lat, $units='kilometers' )
+=head2 CheapRuler->new( $lat, $units='kilometers' )
 
 Create a ruler instance for very fast approximations to common geodesic measurements around a certain latitude.
 
@@ -139,7 +154,9 @@ Create a ruler instance for very fast approximations to common geodesic measurem
 
 	param units (optional), one of: kilometers miles nauticalmiles meters metres yards feet inches   
  
-$ruler = CheapRuler->new(35.05, 'miles');
+Example
+
+	$ruler = CheapRuler->new(35.05, 'miles');
 
 =cut
 
@@ -162,7 +179,7 @@ sub   new ( $class, $lat, $units='kilometers' ) {
 		return $self;
 		}
 
-=head3 distance( $a, $b )
+=head2 distance( $a, $b )
 
 Given two points of the form [longitude, latitude], returns the distance in 'ruler' units.
 
@@ -172,7 +189,9 @@ Given two points of the form [longitude, latitude], returns the distance in 'rul
 
 	returns distance (in chosen units)
 
-$distance = $ruler->distance([30.5, 50.5], [30.51, 50.49]);
+Example
+
+	$distance = $ruler->distance([30.5, 50.5], [30.51, 50.49]);
 
 =cut
 
@@ -183,7 +202,7 @@ sub distance( $self, $a, $b) {
         return sqrt( $dx * $dx + $dy * $dy);
     }
 
-=head3 bearing( $a, $b )
+=head2 bearing( $a, $b )
 
 Returns the bearing between two points in degrees
 	
@@ -192,8 +211,11 @@ Returns the bearing between two points in degrees
 	param $b, point [longitude, latitude]
 
 	returns $bearing (degrees)
-	
+
+Example
+
 	$bearing = $ruler->bearing([30.5, 50.5], [30.51, 50.49]);
+
 =cut
 
 sub bearing($self, $a, $b) {
@@ -202,7 +224,7 @@ sub bearing($self, $a, $b) {
 	return atan2($dx, $dy) / $RAD;
     }
 
-=head3 destination( $point, $distance, $bearing)
+=head2 destination( $point, $distance, $bearing)
 
 Returns a new point given distance and bearing from the starting point.
 
@@ -214,7 +236,9 @@ Returns a new point given distance and bearing from the starting point.
 
 	returns $point [longitude, latitude]
 	
+Example
 	$point = ruler->destination([30.5, 50.5], 0.1, 90);
+
 =cut
 
 sub destination( $self, $p, $dist, $bearing) {
@@ -226,7 +250,7 @@ sub destination( $self, $p, $dist, $bearing) {
 			);
     }
 
-=head3 offset( $point, dx, dy ) 
+=head2 offset( $point, dx, dy ) 
      
 Returns a new point given easting and northing offsets (in ruler units) from the starting point.
    
@@ -238,6 +262,8 @@ Returns a new point given easting and northing offsets (in ruler units) from the
 
 	returns $point [longitude, latitude]
 
+Example
+
 	$point = ruler.offset([30.5, 50.5], 10, 10);
 =cut
 
@@ -248,13 +274,15 @@ sub offset( $self, $p, $dx, $dy) {
 		];
 	}
  
-=head3 lineDistance ( $points )
+=head2 lineDistance ( $points )
 
 Given a line (an array of points), returns the total line distance.
 
 	param $points, listref of points, where a point is [longitude, latitude]
 
 	returns $number, total line distance in 'ruler' units
+
+Example
 
 	$length = ruler->lineDistance([
 		[-67.031, 50.458], [-67.031, 50.534],
@@ -270,14 +298,16 @@ sub lineDistance( $self, $points ) {
 	return $total;
 	}
 
-=head3 area( $polygon )
+=head2 area( $polygon )
 
 Given a polygon (an array of rings, where each ring is an array of points), returns the area.
 	
 	param $polygon, a list-ref of rings, where a ring is a list of points [lon,lat], 1st ring is outer, 2nd+ rings are inner (holes)
 
 	returns $number, area value in the specified 'ruler' units (square kilometers by default)
-	
+
+Example
+
 	$area = $ruler->area([[
 		[-67.031, 50.458], [-67.031, 50.534], [-66.929, 50.534], [-66.929, 50.458], [-67.031, 50.458]
 		]]);
@@ -297,7 +327,7 @@ sub area( $self, $polygon ) {
 		return ( abs( $sum ) / 2 ) * $self->{kx} * $self->{ky};
 		}
 
-=head3 along( $line, $distance)
+=head2 along( $line, $distance)
 
 Returns the point at a specified distance along the line.
 
@@ -306,7 +336,9 @@ Returns the point at a specified distance along the line.
 	param $dist, distance in ruler units
 
 	returns $point, a list-ref [lon, lat]
-	
+
+Example
+
 	$point = $ruler->along(
 		[ [-67.031, 50.458], [-67.031, 50.534], [-66.929, 50.534] ],
 		2.5);
@@ -328,7 +360,7 @@ sub along( $self, $line, $dist ) {
 	return $line->[ $#{ $line } ];
 	}
 
-=head3 pointToSegmentDistance( $p, $a, $b )
+=head2 pointToSegmentDistance( $p, $a, $b )
 
 Returns the distance from a point `p` to a line segment `a` to `b`.
 
@@ -340,7 +372,10 @@ Returns the distance from a point `p` to a line segment `a` to `b`.
 
 	returns $distance (in ruler units)
     
+Example
+
 	$distance = $ruler->pointToSegmentDistance([-67.04, 50.5], [-67.05, 50.57], [-67.03, 50.54]);
+
 =cut
 
 sub pointToSegmentDistance( $self, $p, $a, $b) {
@@ -368,7 +403,7 @@ sub pointToSegmentDistance( $self, $p, $a, $b) {
 	return sqrt($dx**2 + $dy**2);
 }
 
-=head3 pointOnLine( $line, $p )
+=head2 pointOnLine( $line, $p )
 
 Returns an object of the form {point, index, t}, where
 
@@ -383,9 +418,12 @@ Returns an object of the form {point, index, t}, where
 
 	param $p, point of [longitude, latitude]
 
-	returns { point : [lon, lat], index, t }}
+	returns { point => [lon, lat], index => number, t => number }
+
+Example
 
 	$info = $ruler->pointOnLine( $line, [-67.04, 50.5])
+
 =cut
 
 sub pointOnLine( $self, $line, $p) {
@@ -440,7 +478,7 @@ sub pointOnLine( $self, $line, $p) {
 		};
 	}
 
-=head3 lineSlice( $start, $stop, $line )
+=head2 lineSlice( $start, $stop, $line )
 
 Returns a part of the given line between the start and the stop points (or their closest points on the line).
 
@@ -452,7 +490,10 @@ Returns a part of the given line between the start and the stop points (or their
 
 	returns $linea_slice (a listref) part of the line
 
+Example
+
 	$line_slice = $ruler->lineSlice([-67.04, 50.5], [-67.05, 50.56], $line);
+
 =cut
 
 sub lineSlice($self, $start, $stop, $line) {
@@ -485,7 +526,7 @@ sub lineSlice($self, $start, $stop, $line) {
 	return [ @slice ];
 	}
 
-=head3 lineSliceAlong( $start, $stop, $line )
+=head2 lineSliceAlong( $start, $stop, $line )
 
 Returns a part of the given line between the start and the stop points indicated by distance (in 'units') along the line.
 
@@ -496,6 +537,8 @@ Returns a part of the given line between the start and the stop points indicated
 	param $line, listref of points
 
 	returns $line_slice, listref of points, part of a line
+
+Example
 
 	$line_slice = $ruler->lineSliceAlong(10, 20, $line);
 
@@ -527,7 +570,7 @@ sub lineSliceAlong( $self, $start, $stop, $line) {
 	return [ @slice ];
 	}
 
-=head3 bufferPoint( point, buffer_distance )
+=head2 bufferPoint( point, buffer_distance )
 
 Given a point, returns a bounding box object ([w, s, e, n]) created from the given point buffered by a given distance.
  
@@ -536,6 +579,8 @@ Given a point, returns a bounding box object ([w, s, e, n]) created from the giv
 	param $buffer, a distance in ruler units
 
 	returns $bbox, listref, [w, s, e, n]
+
+Example
 
 	$bbox = $ruler->bufferPoint([30.5, 50.5], 0.01);
  
@@ -552,7 +597,7 @@ sub bufferPoint( $self, $p, $buffer) {
 		];
 	}
 
-=head3 bufferBBox( $bbox, $buffer )
+=head2 bufferBBox( $bbox, $buffer )
 
 Given a bounding box, returns the box buffered by a given distance.
 
@@ -561,6 +606,8 @@ Given a bounding box, returns the box buffered by a given distance.
 	param $buffer, distance in ruler units
 
 	returns $bbox, a listref, [w, s, e, n]
+
+Example
 
 	$bbox = $ruler->bufferBBox([30.5, 50.5, 31, 51], 0.2);
 
@@ -577,7 +624,7 @@ sub bufferBBox( $self, $bbox, $buffer) {
         ];
     }
 
-=head3 insideBBox( $point, $bbox )
+=head2 insideBBox( $point, $bbox )
 
 Returns true (1) if the given point is inside in the given bounding box, otherwise false (0).
 
@@ -587,7 +634,10 @@ Returns true (1) if the given point is inside in the given bounding box, otherwi
 
 	returns 0 or 1 (boolean)
 
+Example
+
 	$is_inside = $ruler->insideBBox([30.5, 50.5], [30, 50, 31, 51]);
+
 =cut
 
 sub insideBBox( $self, $p, $bbox) {
@@ -597,9 +647,9 @@ sub insideBBox( $self, $p, $bbox) {
 		   $p->[1] <= $bbox->[3];
 	}
 
-=head3 CheapRuler::equals( $a, $b)
+=head2 CheapRuler::equals( $a, $b)
 
-tests if 2 points are equals
+Tests if 2 points are equal.
 
 a function not a method!
 
@@ -613,9 +663,9 @@ sub equals($a, $b) {
     return ( $a->[0] == $b->[0] && $a->[1] == $b->[1] ) ? 1 : 0;
 	}
 
-=head3 CheapRuler::interpolate( $a, $b, $t )
+=head2 CheapRuler::interpolate( $a, $b, $t )
 
-returns point along a line segment from a to b
+Returns a point along a line segment from $a to $b
 
 a function not a method!
 
@@ -626,6 +676,7 @@ a function not a method!
 	param $t, ratio (0 <= $t  < 1 ), of the way along the line segment
 
 	returns $p, point [ lon, lat]
+
 =cut
 
 sub interpolate($a, $b, $t) {
@@ -637,13 +688,15 @@ sub interpolate($a, $b, $t) {
 		];
 	}
 
-=head3 CheapRuler::normalize( $degrees )
+=head2 CheapRuler::normalize( $degrees )
 
-normalize a degree value into [-180..180] range
+Normalize a lon degree value into [-180..180] range
 
 a function not a method!
 
-	param degrees
+	param $degrees
+
+	return $degrees
  
 =cut
 
@@ -653,7 +706,51 @@ sub wrap( $deg) {
     while ( $deg > 180)  { $deg -= 360; }
 
     return $deg;
-
 	}
 
-1;
+
+=head1 SUPPORT
+
+You can find documentation for this module with the perldoc command.
+
+    perldoc Geo::CheapRuler
+
+Or at
+
+	https://github.com/aavmurphy/CheapRuler
+
+=head1 BUGS
+
+Please report any bugs or feature requests of this port to
+
+	https://github.com/aavmurphy/CheapRuler
+
+For the original, please see
+
+	https://github.com/mapbox/cheap-ruler
+
+=head1 AUTHOR
+
+Andrew Murphy, C<< <aavm at perl.org> >>
+
+=head1 LICENSE AND COPYRIGHT
+
+The original, mapbox/cheap-ruler, is (c) Mapbox.
+
+This port is Copyright (c) 2025 by Andrew Murphy.
+
+This is free software, licensed under:
+
+  The Artistic License 2.0 (GPL Compatible)
+
+=head1 ACKNOWLEDGEMENTS
+
+This module is a direct port of mapbox/cheap-ruler
+
+=head1 GITHUB README
+
+README.md is auto-generated from Perl POD
+
+=cut
+
+1; # End of Geo::CheapRuler

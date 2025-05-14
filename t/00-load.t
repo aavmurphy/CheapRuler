@@ -7,7 +7,7 @@ use Test::More;
 plan tests => 1;
 
 BEGIN {
-    use_ok( 'CheapRuler' ) || print "Bail out!\n";
+    use_ok( 'Geo::CheapRuler' ) || print "Bail out!\n";
 }
 
-diag( "Testing CheapRuler $CheapRuler::VERSION, Perl $], $^X" );
+diag( "Testing Geo::CheapRuler $Geo::CheapRuler::VERSION, Perl $], $^X" );

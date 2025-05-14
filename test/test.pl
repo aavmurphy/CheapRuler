@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-require '../lib/CheapRuler.pm';
+require '../lib/Geo/CheapRuler.pm';
 
 use Scalar::Util qw(looks_like_number);
 use JSON;

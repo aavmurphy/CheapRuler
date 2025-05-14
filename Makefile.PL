@@ -4,10 +4,10 @@ use warnings;
 use ExtUtils::MakeMaker;
 
 my %WriteMakefileArgs = (
-    NAME             => 'CheapRuler',
+    NAME             => 'Geo::CheapRuler',
     AUTHOR           => q{Andrew Murphy <aavm@cpan.org>},
-    VERSION_FROM     => 'lib/CheapRuler.pm',
-    ABSTRACT_FROM    => 'lib/CheapRuler.pm',
+    VERSION_FROM     => 'lib/Geo/CheapRuler.pm',
+    ABSTRACT_FROM    => 'lib/Geo/CheapRuler.pm',
     LICENSE          => 'artistic_2',
     MIN_PERL_VERSION => '5.006',
     CONFIGURE_REQUIRES => {

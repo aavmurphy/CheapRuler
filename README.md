@@ -1,4 +1,4 @@
-# CheapRuler
+# Geo::CheapRuler
 
 A collection of very fast approximations to common geodesic measurements. Useful for performance-sensitive code that measures things on a city scale (less than 500km, not near the poles). Can be an order of magnitude faster than Haversine based methods.
 
@@ -310,3 +310,7 @@ a function not a method!
 
            param degrees
     
+
+## README.md
+
+README.md is auto-generated from Perl POD
