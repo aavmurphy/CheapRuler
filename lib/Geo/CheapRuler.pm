@@ -32,6 +32,8 @@ Nothing
 
 https://github.com/aavmurphy/CheapRuler
 
+https://github.com/aavmurphy/CheapRuler/blob/main/lib/Geo/CheapRuler.pm
+
 =head1 USAGE
 
 This module uses "geojson" style GPS geometrys. Points are [lon, lat]. Polygons are a series of rings. The first ring is exterior and clockwise. Subsequent rings are interior (holes) and anticlockwise. 
@@ -83,7 +85,7 @@ In the examples below, $p is a point, $a and $b are a line segment.
 
 use strict;
 use warnings;
-use 5.20; # min version for experimental signatures
+use v5.20; # min version for experimental signatures
 use experimental 'signatures';
 use Math::Trig;
 use Data::Dumper;
@@ -720,6 +722,8 @@ Or at
 	https://github.com/aavmurphy/CheapRuler
 
 =head1 BUGS
+
+The orginal's code had been stable for 5 years at the time of porting. 
 
 Please report any bugs or feature requests of this port to
 
