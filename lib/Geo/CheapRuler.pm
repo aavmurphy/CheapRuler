@@ -1,9 +1,13 @@
 package Geo::CheapRuler;
 
+#
 # how to update README.md
 #	pod2markdown CheapRuler.pm > ../../README.md
+#
+# $VERSION appears twice here, and once on GITHUB
+#
 
-our $VERSION = '0.1.0';
+our $VERSION = '0.01';
 
 =head1 NAME 
 
@@ -15,14 +19,17 @@ Geo::CheapRuler
 
 =head1 SYNOPSIS
 
-A collection of very fast approximations to common geodesic measurements. Useful for performance-sensitive code that measures things on a city scale (less than 500km, not near the poles). Can be an order of magnitude faster than Haversine based methods.
+A collection of very fast approximations to common geodesic measurements. Useful for performance-sensitive code that measures things on a city scale (less than 500km, not near the poles).
+Can be an order of magnitude faster than Haversine based methods.
 
 A Perl port of Mapbox's cheap-ruler v4.0.0 https://github.com/mapbox/cheap-ruler
 
 Very fast as they use just 1 trig function per call.
 
 The Maths model is based upon the Earth's actual shape (a squashed sphere). For 'city' scale work, it is more accurate than
-the Haversine formulae (which uses several trig calls based upon a spherical Earth). The Cheap_Ruler Github page explains it better!
+the Haversine formulae (which uses several trig calls based upon a spherical Earth).
+See https://blog.mapbox.com/fast-geodesic-approximations-with-cheap-ruler-106f229ad016
+
 
 =head1 EXPORT
 
@@ -31,8 +38,6 @@ Nothing
 =head1 WEBSITE
 
 https://github.com/aavmurphy/CheapRuler
-
-https://github.com/aavmurphy/CheapRuler/blob/main/lib/Geo/CheapRuler.pm
 
 =head1 USAGE
 
@@ -85,7 +90,7 @@ In the examples below, $p is a point, $a and $b are a line segment.
 
 use strict;
 use warnings;
-use v5.20; # min version for experimental signatures
+use 5.20; # min version for experimental signatures
 use experimental 'signatures';
 use Math::Trig;
 use Data::Dumper;
@@ -722,8 +727,6 @@ Or at
 	https://github.com/aavmurphy/CheapRuler
 
 =head1 BUGS
-
-The orginal's code had been stable for 5 years at the time of porting. 
 
 Please report any bugs or feature requests of this port to
 
