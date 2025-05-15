@@ -61,7 +61,7 @@ In the examples below, $p is a point, $a and $b are a line segment.
         $point = $ruler->offset( $p, 100, 200 );
         # returns a point 100 units east, 200 units north
 
-        $distance = $ruler->lineDistance( ( $p, $a, $b ) );
+        $distance = $ruler->lineDistance( [ $p, $a, $b ] );
         # length of the line
 
         $area = $ruler->area( (
