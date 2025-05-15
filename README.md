@@ -4,7 +4,7 @@ Geo::CheapRuler
 
 # VERSION
 
-0.1.0
+v0.1.0
 
 # SYNOPSIS
 
@@ -17,9 +17,9 @@ Very fast as they use just 1 trig function per call.
 
 # MATHS MODEL
 
-The Maths model is based upon an approximation to Vicenty's formulae, which uses the Earth's actual shape, an oblate ellipsoid (squashed sphere). For 'city' scale work, it is actually more accurate than
-the Haversine formulae (which uses several trig calls based upon a spherical Earth).
-See https://blog.mapbox.com/fast-geodesic-approximations-with-cheap-ruler-106f229ad016
+The Maths model is based upon an approximation to Vicenty's formulae, which uses the Earth's actual shape, an oblate ellipsoid (squashed sphere). For 'city' scale work, it is still more accurate than
+the Haversine formulae (which uses several trig calls based upon a spherical Earth). For an explanation, see
+https://blog.mapbox.com/fast-geodesic-approximations-with-cheap-ruler-106f229ad016
 
 # EXPORT
 
@@ -82,6 +82,8 @@ In the examples below, $p is a point, $a and $b are a line segment.
 
 Creates a ruler object from Google web mercator tile coordinates (y and z). That's correct, y and z, not x.
 
+See 'new' below for available units.
+
 Example
 
         $ruler = CheapRuler::fromTile( 11041, 15, 'meters');
@@ -89,6 +91,8 @@ Example
 ## units()
 
 Multipliers for converting between units.
+
+See 'new' below for available units.
 
 Example : convert 50 meters to yards
 
@@ -100,7 +104,7 @@ Example : convert 50 meters to yards
 
 Create a ruler instance for very fast approximations to common geodesic measurements around a certain latitude.
 
-           param latitude
+           param latitude, e.g. 54.31
 
            param units (optional), one of: kilometers miles nauticalmiles meters metres yards feet inches   
     
