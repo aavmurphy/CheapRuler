@@ -26,10 +26,11 @@ A Perl port of Mapbox's cheap-ruler v4.0.0 https://github.com/mapbox/cheap-ruler
 
 Very fast as they use just 1 trig function per call.
 
-The Maths model is based upon the Earth's actual shape (a squashed sphere). For 'city' scale work, it is more accurate than
+=head1 MATHS MODEL
+
+The Maths model is based upon an approximation to Vicenty's formulae, which uses the Earth's actual shape, an oblate ellipsoid (squashed sphere). For 'city' scale work, it is actually more accurate than
 the Haversine formulae (which uses several trig calls based upon a spherical Earth).
 See https://blog.mapbox.com/fast-geodesic-approximations-with-cheap-ruler-106f229ad016
-
 
 =head1 EXPORT
 
@@ -41,9 +42,9 @@ https://github.com/aavmurphy/CheapRuler
 
 =head1 USAGE
 
-This module uses "geojson" style GPS geometrys. Points are [lon, lat]. Polygons are a series of rings. The first ring is exterior and clockwise. Subsequent rings are interior (holes) and anticlockwise. 
+This module uses "geojson" style GPS geometery. Points are [lon, lat]. Polygons are a series of rings. The first ring is exterior and clockwise. Subsequent rings are interior (holes) and anticlockwise. 
 
-The latitude (lat) parameter passed to the constructor should be the 'middle' of the lat's used.
+The latitude (lat) parameter passed to the constructor should be the 'median' of the lat's used, i.e. (max-lat + min-lat)/2.
 
 Some methods have units, e.g. "expand a bounding box by 10 meters/miles/kilometers". The default 'units' are 'kilometers', you may which to use 'meters'.
 
@@ -76,11 +77,11 @@ In the examples below, $p is a point, $a and $b are a line segment.
 	$distance = $ruler->lineDistance( [ $p, $a, $b ] );
 	# length of the line
 
-	$area = $ruler->area( (
+	$area = $ruler->area( [
 		[-67.031, 50.458], [-67.031, 50.534], [-66.929, 50.534], [-66.929, 50.458], [-67.031, 50.458]
-		) ); # area of a polygon
+		] ); # area of a polygon
 
-	$point = $ruler->along( ( [-67.031, 50.458], [-67.031, 50.534], [-66.929, 50.534] ), 2.5);
+	$point = $ruler->along( [ [-67.031, 50.458], [-67.031, 50.534], [-66.929, 50.534] ], 2.5);
 	# returns a point 2.5 units along the line
 
 	$distance = $ruler->pointToSegmentDistance( $p, $a, $b );
