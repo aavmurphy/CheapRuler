@@ -1,5 +1,14 @@
 #!/usr/bin/perl
 
+# (c) Andrew Murphy 2025, as a perl port of the mapbox/cheap-ruler original
+#
+# A direct port of mapbox/cheap-ruler's tests, which are (c) mapbox
+#
+# The original compared the results from this module to 'definitive' results from the @turf/tuf javascript library. 
+# As that's not available in Perl, I saved the results from running the JS test program, and hardcoded them here.
+#
+#
+
 require '../lib/Geo/CheapRuler.pm';
 
 use Scalar::Util qw(looks_like_number);
